@@ -1,55 +1,71 @@
 import {Request, Response, Router} from "express";
 import {recourseRepository} from "../repository";
 import {RequestBody} from "../typed";
-import {CreateRecourseDto} from "./dto";
+import {CreateRecourseDto, UpdateRecourseDto} from "./dto";
 import {RecourseStatus} from "../entity/recourse";
 
 
 export class RecourseController {
 
     static async all(request: Request, response: Response) {
-        const data = await recourseRepository.findAll();
-        return response.status(200).send(data);
+        return response.status(200).send(
+            await recourseRepository.findAll()
+        );
     }
 
     static async findOne(request: Request, response: Response) {
-        const id = Number(request.params.id);
-        const data = await recourseRepository.findOne(id);
-        return response.send(data);
+        return response.send(
+            await recourseRepository.findOne(
+                Number(request.params.id)
+            )
+        );
     }
 
     static async create(request: RequestBody<CreateRecourseDto>, response: Response) {
-        const data = await recourseRepository.create(request.body);
-        return response.status(201).send(data);
-    }
-
-    static async takeInWork(request: RequestBody<{id: number}>, response: Response) {
-        const data = await recourseRepository.updateStatus(
-            request.body.id,
-            RecourseStatus.IN_WORK
+        return response.status(201).send(
+            await recourseRepository.create(request.body)
         );
-        return response.send(data);
     }
 
-    static async complete(request: RequestBody<{id: number}>, response: Response) {
-        const data = await recourseRepository.updateStatus(
+    static async takeInWork(request: RequestBody<{ id: number }>, response: Response) {
+        const updateData = new UpdateRecourseDto()
+        updateData.status = RecourseStatus.IN_WORK
+        const result = await recourseRepository.update(
             request.body.id,
-            RecourseStatus.COMPLETED
+            updateData
         );
-        return response.send(data);
+        return response.send(result);
     }
 
-    static async cancel(request: RequestBody<{id: number}>, response: Response) {
-        const data = await recourseRepository.updateStatus(
+    static async complete(request: RequestBody<{ id: number }>, response: Response) {
+        const updateData = new UpdateRecourseDto()
+        updateData.status = RecourseStatus.COMPLETED
+        const result = await recourseRepository.update(
             request.body.id,
-            RecourseStatus.CANCELED
+            updateData
         );
-        return response.send(data);
+        return response.send(result);
     }
 
-    static async cancelAll(request: RequestBody<{id: number}>, response: Response) {
-        const data = await recourseRepository.cancelAllRecourse();
-        return response.send(data);
+    static async cancel(request: RequestBody<{ id: number, reason?: string }>, response: Response) {
+        const updateData = new UpdateRecourseDto()
+        updateData.status = RecourseStatus.CANCELED
+        updateData.reasonCanceled = request.body.reason
+        const result = await recourseRepository.update(
+            request.body.id,
+            updateData
+        );
+        return response.send(result);
+    }
+
+    static async cancelAll(request: RequestBody<{ id: number, reason?: string }>, response: Response) {
+        const updateData = new UpdateRecourseDto()
+        updateData.status = RecourseStatus.CANCELED
+        updateData.reasonCanceled = request.body.reason
+        const result = await recourseRepository.updateAll(
+            updateData
+        );
+        return response.send(result);
     }
 
     static async delete(request: RequestBody<{ id: number }>, response: Response) {

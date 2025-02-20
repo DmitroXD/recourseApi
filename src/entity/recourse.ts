@@ -25,4 +25,7 @@ export class Recourse {
         default: RecourseStatus.NEW
     })
     status: RecourseStatus;
+
+    @Column("text", { nullable: true })
+    reasonCanceled: string | undefined;
 }

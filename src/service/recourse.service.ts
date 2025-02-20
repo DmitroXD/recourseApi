@@ -1,7 +1,6 @@
 import {Repository} from "typeorm";
 import {Recourse} from "../entity";
 import {CreateRecourseDto, UpdateRecourseDto} from "../controller/dto";
-import {RecourseStatus} from "../entity/recourse";
 
 export class RecourseService {
     constructor(
@@ -31,19 +30,12 @@ export class RecourseService {
             ...data,
         });
     }
-    async updateStatus(id: number, status: RecourseStatus) {
-        const existingRecourse = await this.findOne(id);
-        return await this.recourseRepository.save({
-            ...existingRecourse,
-            status: status,
-        });
-    }
 
-    async cancelAllRecourse() {
+    async updateAll(data: UpdateRecourseDto) {
         return await this.recourseRepository
             .createQueryBuilder()
             .update(Recourse)
-            .set({status: RecourseStatus.CANCELED})
+            .set({ ...data })
             .execute()
     }
 
