@@ -28,4 +28,7 @@ export class Recourse {
 
     @Column("text", { nullable: true })
     reasonCanceled: string | undefined;
+
+    @Column("text", { nullable: true })
+    resultCompleted: string | undefined;
 }

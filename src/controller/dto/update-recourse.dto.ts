@@ -8,4 +8,7 @@ export class UpdateRecourseDto extends CreateRecourseDto {
 
   @IsString()
   reasonCanceled: string | undefined
+
+  @IsString()
+  resultCompleted: string | undefined
 }

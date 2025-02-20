@@ -37,9 +37,10 @@ export class RecourseController {
         return response.send(result);
     }
 
-    static async complete(request: RequestBody<{ id: number }>, response: Response) {
+    static async complete(request: RequestBody<{ id: number, result?: string }>, response: Response) {
         const updateData = new UpdateRecourseDto()
         updateData.status = RecourseStatus.COMPLETED
+        updateData.resultCompleted = request.body.result
         const result = await recourseRepository.update(
             request.body.id,
             updateData
